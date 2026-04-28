@@ -13,7 +13,7 @@
 <body>
   <div class="background-glow" aria-hidden="true"></div>
 
-  <main class="app-shell" data-phase="input">
+  <main class="app-shell" data-phase="input" data-ready="false" data-note-active="false">
     <header class="brand" aria-label="EchoShredder 标题">
       <div class="brand-row">
         <span class="icon">✂</span>
@@ -24,18 +24,20 @@
     </header>
 
     <section class="stage" aria-live="polite">
-      <div class="note-wrap">
-        <div class="note-card" id="noteCard">
-          <div class="note-lines" aria-hidden="true"></div>
-          <textarea
-            id="inputText"
-            class="note-input"
-            placeholder="此刻你在烦恼什么？"
-            maxlength="220"
-          ></textarea>
-          <div class="note-meta">
-            <span>WRITE / RELEASE / ERASE</span>
-            <strong id="charCount">0 / 220</strong>
+      <div class="note-clip">
+        <div class="note-wrap">
+          <div class="note-card" id="noteCard">
+            <div class="note-lines" aria-hidden="true"></div>
+            <textarea
+              id="inputText"
+              class="note-input"
+              placeholder="此刻你在烦恼什么？"
+              maxlength="220"
+            ></textarea>
+            <div class="note-meta">
+              <span>WRITE / RELEASE / ERASE</span>
+              <strong id="charCount">0 / 220</strong>
+            </div>
           </div>
         </div>
       </div>

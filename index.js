@@ -2,6 +2,7 @@ const state = {
   phase: 'input',
   text: '',
   timerId: null,
+  isFocused: false,
 };
 
 const appShell = document.querySelector('.app-shell');
@@ -12,6 +13,11 @@ const resultPanel = document.getElementById('resultPanel');
 const echoText = document.getElementById('echoText');
 const charCount = document.getElementById('charCount');
 const particles = document.getElementById('particles');
+
+function syncNoteActive() {
+  const active = state.phase === 'input' && (state.isFocused || state.text.trim().length > 0);
+  appShell.dataset.noteActive = String(active);
+}
 
 const keywordBuckets = [
   {
@@ -72,12 +78,14 @@ function setPhase(phase) {
   shredButton.classList.toggle('hidden', phase !== 'input');
   resetButton.classList.toggle('hidden', phase !== 'result');
   input.readOnly = phase !== 'input';
+  syncNoteActive();
 }
 
 function renderCount() {
   const length = state.text.length;
   charCount.textContent = `${length} / 220`;
   shredButton.disabled = !state.text.trim() || state.phase !== 'input';
+  syncNoteActive();
 }
 
 function burstParticles() {
@@ -97,6 +105,7 @@ function startShredding() {
     return;
   }
 
+  input.blur();
   setPhase('shredding');
   burstParticles();
 
@@ -123,6 +132,16 @@ input.addEventListener('input', (event) => {
   renderCount();
 });
 
+input.addEventListener('focus', () => {
+  state.isFocused = true;
+  syncNoteActive();
+});
+
+input.addEventListener('blur', () => {
+  state.isFocused = false;
+  syncNoteActive();
+});
+
 input.addEventListener('keydown', (event) => {
   if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
     startShredding();
@@ -134,3 +153,8 @@ resetButton.addEventListener('click', reset);
 
 setPhase('input');
 renderCount();
+window.requestAnimationFrame(() => {
+  window.requestAnimationFrame(() => {
+    appShell.dataset.ready = 'true';
+  });
+});

@@ -83,36 +83,60 @@ body {
   min-height: 520px;
   display: grid;
   place-items: center;
+  --note-drop: 230px;
+}
+
+.note-clip {
+  position: absolute;
+  bottom: 160px;
+  width: 100%;
+  height: 600px;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  pointer-events: none;
+  z-index: 1;
 }
 
 .note-wrap {
   position: absolute;
-  top: 14px;
-  z-index: 2;
-  transition: transform 0.5s ease, opacity 0.35s ease;
+  transform: translateY(-600px);
+  opacity: 0;
+  transition:
+    transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.2),
+    opacity 0.35s ease;
+  pointer-events: auto;
 }
 
 .note-card {
   position: relative;
-  width: min(78vw, 290px);
-  height: min(78vw, 290px);
-  padding: 26px 24px 18px;
+  width: 210px;
+  height: 210px;
+  padding: 28px 28px 20px;
   background: linear-gradient(180deg, #fffdf8 0%, #f4efe3 100%);
   color: #1f2937;
   border-left: 7px solid #efe0a8;
   box-shadow: 0 30px 70px rgba(0, 0, 0, 0.45);
-  transform: rotate(-6deg);
+  transform: rotate(-8deg) scale(0.9);
+  transform-origin: center center;
   transition: transform 0.45s ease, box-shadow 0.45s ease;
+  overflow: hidden;
 }
 
-.note-card:focus-within {
-  transform: rotate(0deg) scale(1.03);
+.app-shell[data-ready="true"][data-phase="input"] .note-wrap {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.app-shell[data-note-active="true"][data-phase="input"] .note-card {
+  transform: rotate(0deg) scale(1.05);
   box-shadow: 0 40px 85px rgba(0, 0, 0, 0.55);
 }
 
 .note-lines {
   position: absolute;
-  inset: 48px 24px 20px;
+  inset: 48px 28px 20px;
   background-image: linear-gradient(to bottom, rgba(110, 118, 129, 0.13) 1px, transparent 1px);
   background-size: 100% 24px;
   pointer-events: none;
@@ -137,8 +161,8 @@ body {
 
 .note-meta {
   position: absolute;
-  left: 24px;
-  right: 24px;
+  left: 28px;
+  right: 28px;
   bottom: 16px;
   display: flex;
   justify-content: space-between;
@@ -150,25 +174,53 @@ body {
 
 .machine {
   position: absolute;
-  bottom: 70px;
-  width: min(100%, 320px);
+  bottom: 132px;
+  width: 260px;
   z-index: 3;
   transition: transform 0.12s linear;
 }
 
 .machine-top {
-  padding: 16px 18px 14px;
+  position: relative;
+  height: 64px;
+  padding: 12px 18px 0;
   background: linear-gradient(180deg, #202224 0%, #08090a 100%);
   border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 28px;
   box-shadow: 0 28px 80px rgba(0, 0, 0, 0.62);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.machine-top::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 40%);
+  pointer-events: none;
+}
+
+.machine-top::before {
+  content: "";
+  position: absolute;
+  left: 20px;
+  right: 20px;
+  top: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(0, 0, 0, 0.72));
+  pointer-events: none;
 }
 
 .slot {
   display: grid;
   align-items: center;
-  width: 100%;
-  height: 14px;
+  width: 85%;
+  height: 12px;
+  margin-top: 8px;
   padding: 0 8px;
   background: #000;
   border-radius: 999px;
@@ -185,10 +237,10 @@ body {
 }
 
 .machine-lights {
-  margin-top: 14px;
+  margin-top: 10px;
   display: flex;
   justify-content: center;
-  gap: 56px;
+  gap: 48px;
 }
 
 .light {
@@ -200,13 +252,14 @@ body {
 }
 
 .machine-body {
-  width: 92%;
+  width: 100%;
   height: 120px;
-  margin: 0 auto;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01));
+  margin: -2px auto 0;
+  background: linear-gradient(180deg, rgba(14, 16, 18, 0.98), rgba(8, 9, 10, 0.96));
   border: 1px solid rgba(255, 255, 255, 0.04);
   border-top: 0;
-  border-radius: 0 0 26px 26px;
+  border-radius: 0 0 24px 24px;
+  opacity: 0.14;
 }
 
 .particles {
@@ -340,7 +393,13 @@ body {
 }
 
 .app-shell[data-phase="shredding"] .note-wrap {
-  transform: translateY(225px) scale(0.88);
+  transform: translateY(var(--note-drop)) scale(0.88);
+  opacity: 1;
+}
+
+.app-shell[data-phase="shredding"] .note-card {
+  transform: rotate(0deg) scale(0.85);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.3);
 }
 
 .app-shell[data-phase="shredding"] .machine {
@@ -360,6 +419,12 @@ body {
 .app-shell[data-phase="result"] .light-status {
   background: var(--green);
   box-shadow: 0 0 14px rgba(45, 216, 129, 0.75);
+}
+
+.app-shell[data-phase="result"] .note-wrap {
+  transform: translateY(calc(var(--note-drop) + 30px));
+  opacity: 0;
+  pointer-events: none;
 }
 
 @keyframes burst {
@@ -404,6 +469,7 @@ body {
 
   .stage {
     min-height: 470px;
+    --note-drop: 210px;
   }
 
   .info-panel {
@@ -411,16 +477,16 @@ body {
   }
 
   .note-card {
-    width: min(84vw, 270px);
-    height: min(84vw, 270px);
+    width: min(84vw, 210px);
+    height: min(84vw, 210px);
   }
 
   .machine {
-    bottom: 50px;
-    width: min(100%, 290px);
+    bottom: 122px;
+    width: min(100%, 260px);
   }
 
   .app-shell[data-phase="shredding"] .note-wrap {
-    transform: translateY(190px) scale(0.86);
+    transform: translateY(var(--note-drop)) scale(0.86);
   }
 }
